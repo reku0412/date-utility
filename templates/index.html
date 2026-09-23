@@ -26,7 +26,7 @@
             name="date"
             required>
 
-        <button type="submit">
+        <button type="submit" name="action" value="date" >
             🔍 Analyze Date
         </button>
 
@@ -95,32 +95,30 @@
                 name="target_date"
                 required>
 
-
-            <button type="submit">
+            <button type="submit" name="action" value="life">
                 🎯 人生日数を計算
             </button>
 
         </form>
 
 
-        {% if lived is not none %}
+    {% if lived is not none %}
 
-        <div class="result">
+    <div class="result">
 
-            <div class="info-card">
-                <h3>🎂 生きてきた日数</h3>
-                <p>{{ lived }} 日</p>
-            </div>
-
-            <div class="info-card">
-                <h3>🎯 100歳まで</h3>
-                <p>あと {{ remaining_to_hundred }} 日</p>
-            </div>
-
+        <div class="info-card">
+            <h3>🎂 生きてきた日数</h3>
+            <p>{{ lived }} 日</p>
         </div>
 
-        {% endif %}
+        <div class="info-card">
+            <h3>🎯 100歳まで</h3>
+            <p>あと {{ remaining_to_hundred }} 日</p>
+        </div>
 
+    </div>
+
+    {% endif %}
     </div>
 
 

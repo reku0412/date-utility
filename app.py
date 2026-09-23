@@ -76,50 +76,80 @@ def index():
     if request.method == "POST":
 
         try:
-            date = request.form["date"]
+            action = request.form.get("action")
 
-            year, month, day = map(int, date.split("-"))
+            # ==========================
+            # 日付分析
+            # ==========================
 
-            # 日付チェック
-            datetime(year, month, day)
+            if action == "date":
 
-            # 曜日
-            z = zeller_congruence(day, month, year)
-            weekday = show_day_of_week(z)
+                date = request.form["date"]
 
-            # 閏年
-            leap = is_leap_year(year)
-            leap_text = "はい 🌏" if leap else "いいえ"
+                year, month, day = map(int, date.split("-"))
 
-            # 年初からの日数
-            day_number = day_of_year(year, month, day)
+                # 日付チェック
+                datetime(year, month, day)
 
-            # 年末まで
-            remaining = remaining_days(year, month, day)
+                # 曜日
+                z = zeller_congruence(day, month, year)
+                weekday = show_day_of_week(z)
 
-            # 生きてきた日数
-            birthday = request.form["birthday"]
-            target_date = request.form["target_date"]
+                # 閏年
+                leap = is_leap_year(year)
+                leap_text = "はい 🌏" if leap else "いいえ"
 
-            birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
-            target_date = datetime.strptime(target_date, "%Y-%m-%d")
+                # 年初からの日数
+                day_number = day_of_year(year, month, day)
 
-            lived = lived_days(birthday_date, target_date)
-            remaining_to_hundred = days_until_hundred(birthday_date, target_date)
+                # 年末まで
+                remaining = remaining_days(year, month, day)
+
+
+            # ==========================
+            # 人生日数計算
+            # ==========================
+
+            elif action == "life":
+
+                birthday = request.form["birthday"]
+                target_date = request.form["target_date"]
+
+                birthday_date = datetime.strptime(
+                    birthday,
+                    "%Y-%m-%d"
+                )
+
+                target_datetime = datetime.strptime(
+                    target_date,
+                    "%Y-%m-%d"
+                )
+
+                lived = lived_days(
+                    birthday_date,
+                    target_datetime
+                )
+
+                remaining_to_hundred = days_until_hundred(
+                    birthday_date,
+                    target_datetime
+                )
 
         except ValueError:
             result = "⚠️ 無効な日付です。"
 
     return render_template(
-    "index.html",
-    year=year,
-    month=month,
-    day=day,
-    weekday=weekday,
-    leap=leap_text,
-    day_of_year=day_number,
-    remaining_days=remaining,
-    result=result,
-)
+        "index.html",
+        year=year,
+        month=month,
+        day=day,
+        weekday=weekday,
+        leap=leap_text,
+        day_of_year=day_number,
+        remaining_days=remaining,
+        lived=lived,
+        remaining_to_hundred=remaining_to_hundred,
+        result=result,
+    )
 if __name__ == "__main__":
     app.run(debug=True)
