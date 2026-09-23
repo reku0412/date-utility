@@ -38,6 +38,23 @@ def remaining_days(year, month, day):
     total_days = 366 if is_leap_year(year) else 365
     return total_days - day_of_year(year, month, day)
 
+#生きてきた日数
+def lived_days(birthday, target_date):
+    return (target_date - birthday).days
+
+#100歳までの何日あるか
+def get_hundred_birthday(birthday):
+    try:
+        return birthday.replace(year=birthday.year + 100)
+    except ValueError:
+        # 2月29日生まれの場合、100年後は2月28日にする
+        return birthday.replace(year=birthday.year + 100, day=28)
+    
+def days_until_hundred(birthday, target_date):
+    hundred_birthday = get_hundred_birthday(birthday)
+    return (hundred_birthday - target_date).days
+
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -52,6 +69,9 @@ def index():
     day_number = None
     remaining = None
     result = ""
+
+    lived = None
+    remaining_to_hundred = None
 
     if request.method == "POST":
 
@@ -76,6 +96,16 @@ def index():
 
             # 年末まで
             remaining = remaining_days(year, month, day)
+
+            # 生きてきた日数
+            birthday = request.form["birthday"]
+            target_date = request.form["target_date"]
+
+            birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
+            target_date = datetime.strptime(target_date, "%Y-%m-%d")
+
+            lived = lived_days(birthday_date, target_date)
+            remaining_to_hundred = days_until_hundred(birthday_date, target_date)
 
         except ValueError:
             result = "⚠️ 無効な日付です。"
